@@ -1,0 +1,78 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+---
+
+<MainLayout titlePage="Calendario de Eventos de la Comunidad" descriptionPage="">
+  <h1 class="font-semibold text-4xl py-10">Dynamic List</h1>
+  <section class="w-full overflow-auto">
+    <table class="min-w-full mb-4">
+      <thead>
+        <tr>
+          <th
+            class="px-6 py-3 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider sm:text-base">
+            A
+          </th>
+          <th
+            class="px-6 py-3 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider sm:text-base">
+            B
+          </th>
+          <th
+            class="px-6 py-3 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider sm:text-base">
+            C
+          </th>
+          <th
+            class="px-6 py-3 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider sm:text-base">
+            D
+          </th>
+        </tr>
+      </thead>
+      <tbody id="events">
+        <!-- row container -->
+      </tbody>
+    </table>
+  </section>
+</MainLayout>
+
+<script>
+  // Spreadsheet ID and the name of the spreadsheet
+  const SHEET_ID = ''
+  const SHEET_NAME = ''
+  // The URL of the spreadsheet to source data from. Make sure it is public or set to Anyone with link can view.
+  const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?`
+
+  // select column names
+  const SQL_QUERY = `SELECT A, B, C, D`
+  const query = encodeURIComponent(SQL_QUERY)
+  const eventsContainer = document.getElementById('events')
+
+  fetch(`${base}&sheet=${SHEET_NAME}&tq=${query}`)
+    .then(res => res.text())
+    .then(rep => {
+      const jsonString = rep.substring(rep.indexOf('{'), rep.lastIndexOf('}') + 1)
+      const jsData = JSON.parse(jsonString)
+
+      const spreadsheetRows = jsData.table.rows
+
+      eventsContainer.innerHTML = spreadsheetRows
+        .map(row => {
+          return `
+          <tr>
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <div class="text-sm leading-5 font-medium text-gray-900">${row.c[0].f}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <div class="text-sm leading-5 font-medium text-gray-900">${row.c[1].v}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <a class="text-sky-500 underline" href={link} target="_blank">${row.c[2].v}</a>
+            </td>  
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <div class="text-sm leading-5 font-medium text-gray-900">${row.c[3].v}</div>
+            </td>
+          </tr>
+        `
+        })
+        .join('')
+    })
+    .catch(error => console.log(error))
+</script>

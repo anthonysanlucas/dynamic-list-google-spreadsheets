@@ -1,0 +1,26 @@
+---
+interface Props {
+  titlePage: string
+  descriptionPage: string
+}
+
+const { titlePage, descriptionPage } = Astro.props
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{titlePage}</title>
+    <meta name="title" content={titlePage} />
+    <meta name="description" content={descriptionPage} />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    <main class="mx-auto w-full max-w-screen-lg px-4 text-zinc-900 lg:px-6">
+      <slot />
+    </main>
+  </body>
+</html>
